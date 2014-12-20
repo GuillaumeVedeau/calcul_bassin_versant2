@@ -207,6 +207,26 @@ public class Triangle {
         this.point3 = point3;
     }
     
+    public Vecteur calculPente(){
+        Vecteur pente = new Vecteur(0,0);
+        int x1 = this.getPoint1().getPosx() - this.getPoint2().getPosx();
+        int x2 = this.getPoint1().getPosx() - this.getPoint3().getPosx();
+        int y1 = this.getPoint1().getPosy() - this.getPoint2().getPosy();
+        int y2 = this.getPoint1().getPosy() - this.getPoint3().getPosy();
+        int z1 = this.getPoint1().getPosz() - this.getPoint2().getPosz();
+        int z2 = this.getPoint1().getPosz() - this.getPoint3().getPosz();
+     
+        if(x1*y2 - y1*x2 >= 0){
+            pente.setValx((y1*z2 - z1*y2));
+            pente.setValy((z1*x2 - x1*z2));
+        }
+        else{
+            pente.setValx(-(y1*z2 - z1*y2));
+            pente.setValy(-(z1*x2 - x1*z2));
+        }
+        
+        return pente;
+    }
     
 
 }
