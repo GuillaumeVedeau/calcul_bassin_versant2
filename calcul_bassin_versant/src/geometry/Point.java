@@ -15,7 +15,7 @@ public class Point {
     private int posx;
     private int posy;
     private int posz;
-
+    
     /**
      * classic constructor
      * @param posx
@@ -28,7 +28,13 @@ public class Point {
         this.posz = posz;
     }
     
-    
+    public boolean equals(Point point){
+        return(this.getPosx()==point.getPosx()
+                &&
+                this.getPosy()==point.getPosy()
+                &&
+                this.getPosz()==point.getPosz());
+    }
 
     /**
      * Get the value of posz
