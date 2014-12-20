@@ -3,15 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package geometry;
 
 /**
- *
+ * gere les objets de type vecteur
  * @author Utilisateur
  */
 public class Vecteur {
-    
+
     private int valx;
     private int valy;
 
@@ -19,14 +18,15 @@ public class Vecteur {
      * Default constructor
      */
     public Vecteur() {
-        valx =0;
-        valy=0;
+        valx = 0;
+        valy = 0;
     }
 
     /**
      * Classic constructor
+     *
      * @param valx
-     * @param valy 
+     * @param valy
      */
     public Vecteur(int valx, int valy) {
         this.valx = valx;
@@ -35,28 +35,25 @@ public class Vecteur {
 
     /**
      * Constructor based on Segment
-     * @param segment 
+     *
+     * @param segment
      */
     public Vecteur(Segment segment) {
         this.valx = segment.getPoint1().getPosx() - segment.getPoint2().getPosx();
         this.valy = segment.getPoint1().getPosy() - segment.getPoint2().getPosy();
     }
-    
+
     /**
      * Constructor based on 2 Point
+     *
      * @param point1
-     * @param point2 
+     * @param point2
      */
-    public Vecteur(Point point1, Point point2){
+    public Vecteur(Point point1, Point point2) {
         this.valx = point1.getPosx() - point2.getPosx();
         this.valx = point2.getPosy() - point2.getPosy();
     }
-    
-    
 
-    
-    
-    
     /**
      * Get the value of valy
      *
@@ -75,7 +72,6 @@ public class Vecteur {
         this.valy = valy;
     }
 
-
     /**
      * Get the value of valx
      *
@@ -93,6 +89,5 @@ public class Vecteur {
     public void setValx(int valx) {
         this.valx = valx;
     }
-    
 
 }

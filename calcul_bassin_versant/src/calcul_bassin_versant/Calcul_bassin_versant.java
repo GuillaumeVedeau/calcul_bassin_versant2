@@ -7,7 +7,7 @@
 package calcul_bassin_versant;
 
 /**
- *
+ * Calcul le bassin versant d'un point
  * @author Utilisateur
  */
 public class Calcul_bassin_versant {

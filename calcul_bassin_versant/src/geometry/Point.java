@@ -7,7 +7,7 @@
 package geometry;
 
 /**
- *
+ * gere les objet de type Point
  * @author Utilisateur
  */
 public class Point {

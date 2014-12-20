@@ -6,7 +6,7 @@
 package geometry;
 
 /**
- *
+ * gere les objet de type Triangle
  * @author Utilisateur
  */
 public class Triangle {
@@ -83,6 +83,11 @@ public class Triangle {
         this.segment3 = new Segment(point3,point1);
     }
     
+    /**
+     * Renvoie l'égalité complete entre 2 objets de type Triangle (  les objets le constituant sont identiques)
+     * @param triangle
+     * @return 
+     */
     public boolean equals(Triangle triangle){
         
         return(this.getPoint1().equals(triangle.getPoint1())
@@ -207,6 +212,10 @@ public class Triangle {
         this.point3 = point3;
     }
     
+    /**
+     * calcule le vecteur pente en 2D  indiquant la direction de plus forte descente d'une surface en 2.5D
+     * @return 
+     */
     public Vecteur calculPente(){
         Vecteur pente = new Vecteur(0,0);
         int x1 = this.getPoint1().getPosx() - this.getPoint2().getPosx();

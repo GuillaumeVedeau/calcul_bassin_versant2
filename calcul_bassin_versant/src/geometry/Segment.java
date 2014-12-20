@@ -6,7 +6,7 @@
 package geometry;
 
 /**
- * complete constructor
+ * gere les objets de type Segment
  *
  * @author Utilisateur
  */
