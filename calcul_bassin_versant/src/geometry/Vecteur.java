@@ -93,6 +93,10 @@ public class Vecteur {
         this.valx = valx;
     }
 
+    /**
+     * renvoie l'angle d'un vecteur en radians
+     * @return 
+     */
     public double calculAngle() {
         double angle = 0;
         if (this.getValx() == 0 && this.getValy() == 0) {

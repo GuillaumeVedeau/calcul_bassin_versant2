@@ -243,6 +243,11 @@ public class Triangle {
         return pente;
     }
 
+    /**
+     * calcule la part d'un triangle faisant partie du bassin versant sachant le segment qui l'y relie, et propage ensuite selon les nouveaux segments qui y sont rattaché
+     * @param segment
+     * @param bassinVersant 
+     */
     public void calculProjete(Segment segment,ArrayList<Triangle> bassinVersant) {
         if ((!segment.gettraiteDroit() && (segment.getTridroit().equals(this)) || (!segment.getTraiteGauche() && (segment.getTrigauche().equals(this))))) {
 

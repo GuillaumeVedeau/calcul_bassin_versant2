@@ -29,6 +29,11 @@ public class Point3D {
         this.posz = posz;
     }
 
+    /**
+     * Teste l'égalité entre 2 points
+     * @param point
+     * @return 
+     */
     public boolean equals(Point3D point) {
         return (this.getPosx() == point.getPosx()
                 && this.getPosy() == point.getPosy()
@@ -89,6 +94,13 @@ public class Point3D {
         this.posx = posx;
     }
 
+    /**
+     * renvoie le point de projection d'un point sur un segment suivant un vecteur
+     * @param segment
+     * @param point
+     * @param vecteur
+     * @return 
+     */
     public static Point3D intersection(Segment segment, Point3D point, Vecteur vecteur) {
         double a1, b1, c1;
         double a2, b2, c2;
