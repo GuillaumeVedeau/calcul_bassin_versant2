@@ -5,6 +5,8 @@
  */
 package geometry;
 
+import java.util.ArrayList;
+
 /**
  * gere les objet de type Triangle
  *
@@ -241,7 +243,7 @@ public class Triangle {
         return pente;
     }
 
-    public void calculProjete(Segment segment) {
+    public void calculProjete(Segment segment,ArrayList<Triangle> bassinVersant) {
         if ((!segment.gettraiteDroit() && (segment.getTridroit().equals(this)) || (!segment.getTraiteGauche() && (segment.getTrigauche().equals(this))))) {
 
             if (segment.getTridroit().equals(this)) {
@@ -303,19 +305,19 @@ public class Triangle {
                 //2eme cas : propagation totale du triangle
                 if (Vecteur.distAngle(angleAB, anglePente) < Vecteur.distAngle(angleAB, angleAC)) {
                     // projection sur le triangle entier
-                    //TODO Il faudra l'ajouter au bassin
+                    bassinVersant.add(this);
                     
                     if(segmentAB.getTridroit().equals(this)){
-                        segmentAB.getTrigauche().calculProjete(segmentAB);
+                        segmentAB.getTrigauche().calculProjete(segmentAB,bassinVersant);
                     }
                     else{
-                        segmentAB.getTridroit().calculProjete(segmentAB);
+                        segmentAB.getTridroit().calculProjete(segmentAB,bassinVersant);
                     }
                     if(segmentAC.getTridroit().equals(this)){
-                        segmentAC.getTrigauche().calculProjete(segmentAC);
+                        segmentAC.getTrigauche().calculProjete(segmentAC,bassinVersant);
                     }
                     else{
-                        segmentAC.getTridroit().calculProjete(segmentAC);
+                        segmentAC.getTridroit().calculProjete(segmentAC,bassinVersant);
                     }
 
                 } else { // Les 2 cas précédents ont priorité sur les 2 qui suivent pour les cas qui sont en commun
@@ -327,7 +329,7 @@ public class Triangle {
 
                         //projection de B sur le segmentAC suivant la pente 
                         separation = Point3D.intersection(segmentAC, pointB, pente);
-                        segmentAC.decoupe(separation, this, pointC);
+                        segmentAC.decoupe(separation, this, pointC,bassinVersant);
 
                     }
 
@@ -336,7 +338,7 @@ public class Triangle {
 
                         // projection de C sur le segmentAB suivant la pente
                         separation = Point3D.intersection(segmentAB, pointC, pente);
-                        segmentAB.decoupe(separation, this, pointB);
+                        segmentAB.decoupe(separation, this, pointB, bassinVersant);
                     }
                 }
             }
