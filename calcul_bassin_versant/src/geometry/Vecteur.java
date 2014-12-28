@@ -5,14 +5,17 @@
  */
 package geometry;
 
+import static java.lang.Math.*;
+
 /**
  * gere les objets de type vecteur
+ *
  * @author Utilisateur
  */
 public class Vecteur {
 
-    private int valx;
-    private int valy;
+    private double valx;
+    private double valy;
 
     /**
      * Default constructor
@@ -28,7 +31,7 @@ public class Vecteur {
      * @param valx
      * @param valy
      */
-    public Vecteur(int valx, int valy) {
+    public Vecteur(double valx, double valy) {
         this.valx = valx;
         this.valy = valy;
     }
@@ -39,8 +42,8 @@ public class Vecteur {
      * @param segment
      */
     public Vecteur(Segment segment) {
-        this.valx = segment.getPoint1().getPosx() - segment.getPoint2().getPosx();
-        this.valy = segment.getPoint1().getPosy() - segment.getPoint2().getPosy();
+        this.valx = segment.getPoint2().getPosx() - segment.getPoint1().getPosx();
+        this.valy = segment.getPoint2().getPosy() - segment.getPoint1().getPosy();
     }
 
     /**
@@ -49,9 +52,9 @@ public class Vecteur {
      * @param point1
      * @param point2
      */
-    public Vecteur(Point point1, Point point2) {
-        this.valx = point1.getPosx() - point2.getPosx();
-        this.valx = point2.getPosy() - point2.getPosy();
+    public Vecteur(Point3D point1, Point3D point2) {
+        this.valx = point2.getPosx() - point1.getPosx();
+        this.valx = point2.getPosy() - point1.getPosy();
     }
 
     /**
@@ -59,7 +62,7 @@ public class Vecteur {
      *
      * @return the value of valy
      */
-    public int getValy() {
+    public double getValy() {
         return valy;
     }
 
@@ -68,7 +71,7 @@ public class Vecteur {
      *
      * @param valy new value of valy
      */
-    public void setValy(int valy) {
+    public void setValy(double valy) {
         this.valy = valy;
     }
 
@@ -77,7 +80,7 @@ public class Vecteur {
      *
      * @return the value of valx
      */
-    public int getValx() {
+    public double getValx() {
         return valx;
     }
 
@@ -86,8 +89,38 @@ public class Vecteur {
      *
      * @param valx new value of valx
      */
-    public void setValx(int valx) {
+    public void setValx(double valx) {
         this.valx = valx;
+    }
+
+    public double calculAngle() {
+        double angle = 0;
+        if (this.getValx() == 0 && this.getValy() == 0) {
+        } else {
+            if (asin(this.getValy() / (sqrt(this.getValx() * this.getValx() + this.getValy() * this.getValy()))) >= 0) {
+                angle =  acos(this.getValx() / (sqrt(this.getValx() * this.getValx() + this.getValy() * this.getValy())));
+            } else {
+                angle =  acos(this.getValx() / (sqrt(this.getValx() * this.getValx() + this.getValy() * this.getValy())));
+                angle =  (angle + Math.PI);
+            }
+        }
+        return angle;
+    }
+    /**
+     * calcul de la distance angulaire entre 2 angles dans le sens de rotation trigonométrique
+     * @param angle1
+     * @param angle2
+     * @return distance distance angulaire entre angle1 et angle2 dans le sens trigonométrique
+     */
+    public static double distAngle(double angle1, double angle2){
+        double distance;
+        distance = angle2 - angle1;
+        if(angle2 - angle1 <0){
+            distance =  (distance + 2*Math.PI);
+        }
+        
+        return distance;
+        
     }
 
 }

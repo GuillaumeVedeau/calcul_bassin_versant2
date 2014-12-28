@@ -12,11 +12,12 @@ package geometry;
  */
 public class Segment {
 
-    private Point point1;
-    private Point point2;
+    private Point3D point1;
+    private Point3D point2;
     private Triangle tridroit;
     private Triangle trigauche;
-    private boolean traite;
+    private boolean traiteDroit;
+    private boolean traiteGauche;
 
     /**
      * classic constructor
@@ -24,12 +25,13 @@ public class Segment {
      * @param point1
      * @param point2
      */
-    public Segment(Point point1, Point point2) {
+    public Segment(Point3D point1, Point3D point2) {
         this.point1 = point1;
         this.point2 = point2;
         this.tridroit = new Triangle();
         this.trigauche = new Triangle();
-        this.traite = false;
+        this.traiteDroit = false;
+        this.traiteGauche = false;
     }
 
     /**
@@ -40,22 +42,23 @@ public class Segment {
      * @param tridroit
      * @param trigauche
      */
-    public Segment(Point point1, Point point2, Triangle tridroit, Triangle trigauche) {
+    public Segment(Point3D point1, Point3D point2, Triangle tridroit, Triangle trigauche) {
         this.point1 = point1;
         this.point2 = point2;
         this.tridroit = tridroit;
         this.trigauche = trigauche;
-        this.traite = false;
+        this.traiteDroit = false;
+        this.traiteGauche = false;
     }
-    
-    public Segment(){
-        this.point1 = new Point(0,0,0);
-        this.point2 = new Point(0,0,0);
+
+    public Segment() {
+        this.point1 = new Point3D(0, 0, 0);
+        this.point2 = new Point3D(0, 0, 0);
         this.tridroit = new Triangle();
         this.trigauche = new Triangle();
-        this.traite = false;
+        this.traiteDroit = false;
+        this.traiteGauche = false;
     }
-            
 
     public boolean equals(Segment segment) {
         return (this.getPoint1().equals(segment.getPoint1())
@@ -105,7 +108,7 @@ public class Segment {
      *
      * @return the value of point2
      */
-    public Point getPoint2() {
+    public Point3D getPoint2() {
         return point2;
     }
 
@@ -114,7 +117,7 @@ public class Segment {
      *
      * @param point2 new value of point2
      */
-    public void setPoint2(Point point2) {
+    public void setPoint2(Point3D point2) {
         this.point2 = point2;
     }
 
@@ -123,7 +126,7 @@ public class Segment {
      *
      * @return the value of point1
      */
-    public Point getPoint1() {
+    public Point3D getPoint1() {
         return point1;
     }
 
@@ -132,32 +135,50 @@ public class Segment {
      *
      * @param point1 new value of point1
      */
-    public void setPoint1(Point point1) {
+    public void setPoint1(Point3D point1) {
         this.point1 = point1;
     }
 
     /**
-     * Get the value of point1
+     * Get the value of traiteDroit
      *
      * @return the value of point1
      */
-    public boolean gettraite() {
-        return traite;
+    public boolean gettraiteDroit() {
+        return traiteDroit;
     }
 
     /**
-     * Set the value of traite
+     * Set the value of traiteDroit
      *
-     * @param traite new value of traite
+     * @param traiteDroit new value of traiteDroit
      */
-    public void setTraite(boolean traite) {
-        this.traite = traite;
+    public void setTraiteDroit(boolean traiteDroit) {
+        this.traiteDroit = traiteDroit;
     }
 
-    public void decoupe(Point point) {
+    /**
+     * Get the value of traiteGauche
+     *
+     * @return the value of traiteGauche
+     */
+    public boolean getTraiteGauche() {
+        return traiteGauche;
+    }
 
-        Point pointExtGauche = new Point(0, 0, 0);
-        Point pointExtDroit = new Point(0, 0, 0);
+    /**
+     * Set the value of traiteGauche
+     *
+     * @param traiteGauche new value of traiteGauche
+     */
+    public void setTraiteGauche(boolean traiteGauche) {
+        this.traiteGauche = traiteGauche;
+    }
+
+    public void decoupe(Point3D point, Triangle bassin, Point3D passant) {
+
+        Point3D pointExtGauche = new Point3D(0, 0, 0);
+        Point3D pointExtDroit = new Point3D(0, 0, 0);
         Segment seg1 = new Segment(this.getPoint1(), point);
         Segment seg2 = new Segment(point, this.getPoint2());
         Segment segDroitExt1 = new Segment();
@@ -166,10 +187,10 @@ public class Segment {
         Segment segGaucheExt2 = new Segment();
         Segment segDroitMid;
         Segment segGaucheMid;
-        Triangle triDroit1;
-        Triangle triDroit2;
-        Triangle triGauche1;
-        Triangle triGauche2;
+        Triangle triDroit1 = new Triangle();
+        Triangle triDroit2 = new Triangle();
+        Triangle triGauche1 = new Triangle();
+        Triangle triGauche2 = new Triangle();
 
         // découpe du 1er triangle  juxtaposé
         if (this.getTridroit() != null) {
@@ -222,7 +243,7 @@ public class Segment {
         }
 
         // découpe du 2eme triangle  juxtaposé
-        if (this.getTrigauche()!= null) {
+        if (this.getTrigauche() != null) {
             if (this.getTrigauche().getPoint1() == this.getPoint1() || this.getTrigauche().getPoint2() == this.getPoint1()) {
                 if (this.getTrigauche().getPoint1() == this.getPoint2() || this.getTrigauche().getPoint2() == this.getPoint2()) {
                     pointExtGauche = this.getTrigauche().getPoint3();
@@ -254,10 +275,9 @@ public class Segment {
             triGauche2 = new Triangle(segGaucheExt2, segGaucheMid, seg1);
 
             //ajoute les 2 nouveaux triangles au nouveau segment qui les sépare
-            
             segGaucheMid.setTridroit(triGauche1);
             segGaucheMid.setTrigauche(triGauche2);
-            
+
             // modifie les segment extérieurs pour qu'ils prennent en compte les 2 nouveaux triangles
             if (segGaucheExt1.getTridroit().equals(this.getTrigauche())) {
                 segDroitExt1.setTridroit(triGauche1);
@@ -269,6 +289,97 @@ public class Segment {
                 segGaucheExt2.setTridroit(triGauche2);
             } else {
                 segGaucheExt2.setTrigauche(triGauche2);
+            }
+
+        }
+        
+        // Ajout du triangle correspondant au bassin versant et propagation du bassin (cas où le triangle qui a provoqué la séparation était le triangle droit du segment actuel)
+        if ((this.getTridroit() != null) && (bassin.equals(this.getTridroit()))) {
+
+            if (triDroit1.getPoint1().equals(passant) || triDroit1.getPoint2().equals(passant) || triDroit1.getPoint3().equals(passant)) {
+                //TODO ajouter le triDroit1 au bassin versant
+                if (triDroit1.getSegment1().getTridroit().equals(triDroit1)) {
+                    triDroit1.getSegment1().getTrigauche().calculProjete(triDroit1.getSegment1());
+                } else {
+                    triDroit1.getSegment1().getTridroit().calculProjete(triDroit1.getSegment1());
+                }
+
+                if (triDroit1.getSegment2().getTridroit().equals(triDroit1)) {
+                    triDroit1.getSegment2().getTrigauche().calculProjete(triDroit1.getSegment2());
+                } else {
+                    triDroit1.getSegment2().getTridroit().calculProjete(triDroit1.getSegment2());
+                }
+
+                if (triDroit1.getSegment3().getTridroit().equals(triDroit1)) {
+                    triDroit1.getSegment3().getTrigauche().calculProjete(triDroit1.getSegment3());
+                } else {
+                    triDroit1.getSegment3().getTridroit().calculProjete(triDroit1.getSegment3());
+                }
+
+            } else {
+                //TODO ajouter le triDroit2 au bassin versant
+                if (triDroit2.getSegment1().getTridroit().equals(triDroit2)) {
+                    triDroit2.getSegment1().getTrigauche().calculProjete(triDroit2.getSegment1());
+                } else {
+                    triDroit2.getSegment1().getTridroit().calculProjete(triDroit2.getSegment1());
+                }
+
+                if (triDroit2.getSegment2().getTridroit().equals(triDroit2)) {
+                    triDroit2.getSegment2().getTrigauche().calculProjete(triDroit2.getSegment2());
+                } else {
+                    triDroit2.getSegment2().getTridroit().calculProjete(triDroit2.getSegment2());
+                }
+
+                if (triDroit2.getSegment3().getTridroit().equals(triDroit2)) {
+                    triDroit2.getSegment3().getTrigauche().calculProjete(triDroit2.getSegment3());
+                } else {
+                    triDroit2.getSegment3().getTridroit().calculProjete(triDroit2.getSegment3());
+                }
+            }
+        }
+
+        // Ajout du triangle correspondant au bassin versant et propagation du bassin (cas où le triangle qui a provoqué la séparation était le triangle gauche du segment actuel)
+        if ((this.getTrigauche() != null) && (bassin.equals(this.getTrigauche()))) {
+
+            if (triGauche1.getPoint1().equals(passant) || triGauche1.getPoint2().equals(passant) || triGauche1.getPoint3().equals(passant)) {
+                //TODO ajouter le triGauche1 au bassin versant
+                if (triGauche1.getSegment1().getTridroit().equals(triGauche1)) {
+                    triGauche1.getSegment1().getTrigauche().calculProjete(triGauche1.getSegment1());
+                } else {
+                    triGauche1.getSegment1().getTridroit().calculProjete(triGauche1.getSegment1());
+                }
+
+                if (triGauche1.getSegment2().getTridroit().equals(triGauche1)) {
+                    triGauche1.getSegment2().getTrigauche().calculProjete(triGauche1.getSegment2());
+                } else {
+                    triGauche1.getSegment2().getTridroit().calculProjete(triGauche1.getSegment2());
+                }
+
+                if (triGauche1.getSegment3().getTridroit().equals(triGauche1)) {
+                    triGauche1.getSegment3().getTrigauche().calculProjete(triGauche1.getSegment3());
+                } else {
+                    triGauche1.getSegment3().getTridroit().calculProjete(triGauche1.getSegment3());
+                }
+
+            } else {
+                //TODO ajouter le triGauche2 au bassin versant
+                if (triGauche2.getSegment1().getTridroit().equals(triGauche2)) {
+                    triGauche2.getSegment1().getTrigauche().calculProjete(triGauche2.getSegment1());
+                } else {
+                    triGauche2.getSegment1().getTridroit().calculProjete(triGauche2.getSegment1());
+                }
+
+                if (triGauche2.getSegment2().getTridroit().equals(triGauche2)) {
+                    triGauche2.getSegment2().getTrigauche().calculProjete(triGauche2.getSegment2());
+                } else {
+                    triGauche2.getSegment2().getTridroit().calculProjete(triGauche2.getSegment2());
+                }
+
+                if (triGauche2.getSegment3().getTridroit().equals(triGauche2)) {
+                    triGauche2.getSegment3().getTrigauche().calculProjete(triGauche2.getSegment3());
+                } else {
+                    triGauche2.getSegment3().getTridroit().calculProjete(triGauche2.getSegment3());
+                }
             }
 
         }
