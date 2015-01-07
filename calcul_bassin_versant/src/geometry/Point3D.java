@@ -40,6 +40,15 @@ public class Point3D {
                 && this.getPosz() == point.getPosz());
     }
 
+    @Override
+    /**
+     * surcharge de toString
+     */
+    public String toString() {
+        return ("\tx:"+posx+"\ty:"+posy+"\tz:"+posz); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    
     /**
      * Get the value of posz
      *

@@ -8,7 +8,8 @@ package geometry;
 import java.util.ArrayList;
 
 /**
- * gere les objets de type Segment prenant en compte les triangles juxtaposés et leur état de traitement 
+ * gere les objets de type Segment prenant en compte les triangles juxtaposés et
+ * leur état de traitement
  *
  * @author Utilisateur
  */
@@ -30,8 +31,8 @@ public class Segment {
     public Segment(Point3D point1, Point3D point2) {
         this.point1 = point1;
         this.point2 = point2;
-        this.tridroit = new Triangle();
-        this.trigauche = new Triangle();
+        this.tridroit = null;
+        this.trigauche = null;
         this.traiteDroit = false;
         this.traiteGauche = false;
     }
@@ -66,9 +67,34 @@ public class Segment {
     }
 
     /**
+     * cherche et complete trigauche et tridroit du segment selon une liste de
+     * triangle donné
+     *
+     * @param triangles liste de triangles dans lequel il faut chercher ceux
+     * juxtaposés au segment manipulé
+     */
+    public void chercheTriangle(ArrayList<Triangle> triangles) {
+
+        for (Triangle triangle : triangles) {
+            if ((triangle.getPoint1().equals(point1) && triangle.getPoint2().equals(point2))
+                    || (triangle.getPoint2().equals(point1) && triangle.getPoint3().equals(point2))
+                    || (triangle.getPoint3().equals(point1) && triangle.getPoint1().equals(point2))) {
+                this.setTridroit(triangle);
+            }
+            if ((triangle.getPoint2().equals(point1) && triangle.getPoint1().equals(point2))
+                    || (triangle.getPoint3().equals(point1) && triangle.getPoint2().equals(point2))
+                    || (triangle.getPoint1().equals(point1) && triangle.getPoint3().equals(point2))) {
+                this.setTrigauche(triangle);
+            }
+        }
+
+    }
+
+    /**
      * vérifie l'égalité entre 2 segments
+     *
      * @param segment
-     * @return 
+     * @return
      */
     public boolean equals(Segment segment) {
         return (this.getPoint1().equals(segment.getPoint1())
@@ -186,12 +212,20 @@ public class Segment {
     }
 
     /**
-     * gere la propagation d'un bassin versant dans le cas où le triangle du maillage necessite d'etre découpé
-     * Le segment est celui qui peut étendre le bassin versant
-     * @param point séparateur du segment en 2, calculé precedemment selon le bassin versant 
-     * @param bassin triangle où le bassin versant c'est propagé, et dont seule une partie est intégré dans le bassin versant, nécessitant un redecoupage du segment d'où l'eau peut provenir et des 2 triangles adjacent (triangle appelant la methode calculprojete)
-     * @param passant point du triangle "bassin" , appartenant égalemment au segment à découper et au segment parametre de la methode calculProjete ayant entrainé l'appel de cette methode
-     * @param bassinVersant 
+     * gere la propagation d'un bassin versant dans le cas où le triangle du
+     * maillage necessite d'etre découpé Le segment est celui qui peut étendre
+     * le bassin versant
+     *
+     * @param point séparateur du segment en 2, calculé precedemment selon le
+     * bassin versant
+     * @param bassin triangle où le bassin versant c'est propagé, et dont seule
+     * une partie est intégré dans le bassin versant, nécessitant un redecoupage
+     * du segment d'où l'eau peut provenir et des 2 triangles adjacent (triangle
+     * appelant la methode calculprojete)
+     * @param passant point du triangle "bassin" , appartenant égalemment au
+     * segment à découper et au segment parametre de la methode calculProjete
+     * ayant entrainé l'appel de cette methode
+     * @param bassinVersant
      */
     public void decoupe(Point3D point, Triangle bassin, Point3D passant, ArrayList<Triangle> bassinVersant) {
 
@@ -252,7 +286,7 @@ public class Segment {
                 segDroitExt1.setTrigauche(triDroit1);
             }
 
-            if (segDroitExt2.getTridroit().equals(this.getTridroit())) {
+            if (this.getTridroit().equals(segDroitExt2.getTridroit())) {
                 segDroitExt2.setTridroit(triDroit2);
             } else {
                 segDroitExt2.setTrigauche(triDroit2);
@@ -297,13 +331,13 @@ public class Segment {
             segGaucheMid.setTrigauche(triGauche2);
 
             // modifie les segment extérieurs pour qu'ils prennent en compte les 2 nouveaux triangles
-            if (segGaucheExt1.getTridroit().equals(this.getTrigauche())) {
+            if (this.getTrigauche().equals(segGaucheExt1.getTridroit())) {
                 segDroitExt1.setTridroit(triGauche1);
             } else {
                 segDroitExt1.setTrigauche(triGauche1);
             }
 
-            if (segGaucheExt2.getTridroit().equals(this.getTrigauche())) {
+            if (this.getTrigauche().equals(segGaucheExt2.getTridroit())) {
                 segGaucheExt2.setTridroit(triGauche2);
             } else {
                 segGaucheExt2.setTrigauche(triGauche2);
@@ -316,91 +350,126 @@ public class Segment {
 
             if (triDroit1.getPoint1().equals(passant) || triDroit1.getPoint2().equals(passant) || triDroit1.getPoint3().equals(passant)) {
                 bassinVersant.add(triDroit1);
-                if (triDroit1.getSegment1().getTridroit().equals(triDroit1)) {
-                    triDroit1.getSegment1().getTrigauche().calculProjete(triDroit1.getSegment1(), bassinVersant);
-                } else {
-                    triDroit1.getSegment1().getTridroit().calculProjete(triDroit1.getSegment1(), bassinVersant);
+                if (triDroit1.equals(triDroit1.getSegment1().getTridroit())) {
+                    if (triDroit1.getSegment1().getTrigauche() != null) {
+                        {
+                            triDroit1.getSegment1().getTrigauche().calculProjete(triDroit1.getSegment1(), bassinVersant);
+                        }
+                    } else {
+
+                    }
+                    if (triDroit1.getSegment1().getTridroit() != null) {
+                        triDroit1.getSegment1().getTridroit().calculProjete(triDroit1.getSegment1(), bassinVersant);
+                    }
                 }
 
-                if (triDroit1.getSegment2().getTridroit().equals(triDroit1)) {
-                    triDroit1.getSegment2().getTrigauche().calculProjete(triDroit1.getSegment2(), bassinVersant);
+                if (triDroit1.equals(triDroit1.getSegment2().getTridroit())) {
+                    if (triDroit1.getSegment2().getTrigauche() != null) {
+                        triDroit1.getSegment2().getTrigauche().calculProjete(triDroit1.getSegment2(), bassinVersant);
+                    }
                 } else {
-                    triDroit1.getSegment2().getTridroit().calculProjete(triDroit1.getSegment2(), bassinVersant);
+                    if (triDroit1.getSegment2().getTridroit() != null) {
+                        triDroit1.getSegment2().getTridroit().calculProjete(triDroit1.getSegment2(), bassinVersant);
+                    }
                 }
 
-                if (triDroit1.getSegment3().getTridroit().equals(triDroit1)) {
-                    triDroit1.getSegment3().getTrigauche().calculProjete(triDroit1.getSegment3(), bassinVersant);
+                if (triDroit1.equals(triDroit1.getSegment3().getTridroit())) {
+                    if (triDroit1.getSegment3().getTrigauche() != null) {
+                        triDroit1.getSegment3().getTrigauche().calculProjete(triDroit1.getSegment3(), bassinVersant);
+                    }
                 } else {
-                    triDroit1.getSegment3().getTridroit().calculProjete(triDroit1.getSegment3(), bassinVersant);
+                    if (triDroit1.getSegment3().getTridroit() != null) {
+                        triDroit1.getSegment3().getTridroit().calculProjete(triDroit1.getSegment3(), bassinVersant);
+                    }
                 }
+            }
 
-            } else {
-                bassinVersant.add(triDroit2);
-                if (triDroit2.getSegment1().getTridroit().equals(triDroit2)) {
+        } else {
+            bassinVersant.add(triDroit2);
+            if (triDroit2.equals(triDroit2.getSegment1().getTridroit())) {
+                if (triDroit2.getSegment1().getTrigauche() != null) {
                     triDroit2.getSegment1().getTrigauche().calculProjete(triDroit2.getSegment1(), bassinVersant);
-                } else {
+                }
+            } else {
+                if (triDroit2.getSegment1().getTridroit() != null) {
                     triDroit2.getSegment1().getTridroit().calculProjete(triDroit2.getSegment1(), bassinVersant);
                 }
+            }
 
-                if (triDroit2.getSegment2().getTridroit().equals(triDroit2)) {
+            if (triDroit2.equals(triDroit2.getSegment2().getTridroit())) {
+                if (triDroit2.getSegment2().getTrigauche() != null) {
                     triDroit2.getSegment2().getTrigauche().calculProjete(triDroit2.getSegment2(), bassinVersant);
-                } else {
+                }
+            } else {
+                if (triDroit2.getSegment2().getTridroit() != null) {
                     triDroit2.getSegment2().getTridroit().calculProjete(triDroit2.getSegment2(), bassinVersant);
                 }
-
-                if (triDroit2.getSegment3().getTridroit().equals(triDroit2)) {
-                    triDroit2.getSegment3().getTrigauche().calculProjete(triDroit2.getSegment3(), bassinVersant);
-                } else {
-                    triDroit2.getSegment3().getTridroit().calculProjete(triDroit2.getSegment3(), bassinVersant);
-                }
-            }
-        }
-
-        // Ajout du triangle correspondant au bassin versant et propagation du bassin (cas où le triangle qui a provoqué la séparation était le triangle gauche du segment actuel)
-        if ((this.getTrigauche() != null) && (bassin.equals(this.getTrigauche()))) {
-
-            if (triGauche1.getPoint1().equals(passant) || triGauche1.getPoint2().equals(passant) || triGauche1.getPoint3().equals(passant)) {
-                bassinVersant.add(triGauche1);
-                if (triGauche1.getSegment1().getTridroit().equals(triGauche1)) {
-                    triGauche1.getSegment1().getTrigauche().calculProjete(triGauche1.getSegment1(), bassinVersant);
-                } else {
-                    triGauche1.getSegment1().getTridroit().calculProjete(triGauche1.getSegment1(), bassinVersant);
-                }
-
-                if (triGauche1.getSegment2().getTridroit().equals(triGauche1)) {
-                    triGauche1.getSegment2().getTrigauche().calculProjete(triGauche1.getSegment2(), bassinVersant);
-                } else {
-                    triGauche1.getSegment2().getTridroit().calculProjete(triGauche1.getSegment2(), bassinVersant);
-                }
-
-                if (triGauche1.getSegment3().getTridroit().equals(triGauche1)) {
-                    triGauche1.getSegment3().getTrigauche().calculProjete(triGauche1.getSegment3(), bassinVersant);
-                } else {
-                    triGauche1.getSegment3().getTridroit().calculProjete(triGauche1.getSegment3(), bassinVersant);
-                }
-
-            } else {
-                bassinVersant.add(triGauche2);
-                if (triGauche2.getSegment1().getTridroit().equals(triGauche2)) {
-                    triGauche2.getSegment1().getTrigauche().calculProjete(triGauche2.getSegment1(), bassinVersant);
-                } else {
-                    triGauche2.getSegment1().getTridroit().calculProjete(triGauche2.getSegment1(), bassinVersant);
-                }
-
-                if (triGauche2.getSegment2().getTridroit().equals(triGauche2)) {
-                    triGauche2.getSegment2().getTrigauche().calculProjete(triGauche2.getSegment2(), bassinVersant);
-                } else {
-                    triGauche2.getSegment2().getTridroit().calculProjete(triGauche2.getSegment2(), bassinVersant);
-                }
-
-                if (triGauche2.getSegment3().getTridroit().equals(triGauche2)) {
-                    triGauche2.getSegment3().getTrigauche().calculProjete(triGauche2.getSegment3(), bassinVersant);
-                } else {
-                    triGauche2.getSegment3().getTridroit().calculProjete(triGauche2.getSegment3(), bassinVersant);
-                }
             }
 
+            if (triDroit2.equals(triDroit2.getSegment3().getTridroit())) {
+                if(triDroit2.getSegment3().getTrigauche()!= null){
+                triDroit2.getSegment3().getTrigauche().calculProjete(triDroit2.getSegment3(), bassinVersant);
+                } } else {
+                if(triDroit2.getSegment3().getTridroit()!= null){
+                triDroit2.getSegment3().getTridroit().calculProjete(triDroit2.getSegment3(), bassinVersant);
+            }
         }
     }
+
+    // Ajout du triangle correspondant au bassin versant et propagation du bassin (cas où le triangle qui a provoqué la séparation était le triangle gauche du segment actuel)
+    if ((this.getTrigauche() 
+        != null) && (bassin.equals(this.getTrigauche()))) {
+
+            if (triGauche1.getPoint1().equals(passant) || triGauche1.getPoint2().equals(passant) || triGauche1.getPoint3().equals(passant)) {
+            bassinVersant.add(triGauche1);
+            if (triGauche1.equals(triGauche1.getSegment1().getTridroit())) {
+                triGauche1.getSegment1().getTrigauche().calculProjete(triGauche1.getSegment1(), bassinVersant);
+            } else {
+                if (triGauche1.getSegment1().getTridroit() != null) {
+                    triGauche1.getSegment1().getTridroit().calculProjete(triGauche1.getSegment1(), bassinVersant);
+                }
+            }
+
+            if (triGauche1.getSegment2().getTridroit().equals(triGauche1)) {
+                triGauche1.getSegment2().getTrigauche().calculProjete(triGauche1.getSegment2(), bassinVersant);
+            } else {
+
+                triGauche1.getSegment2().getTridroit().calculProjete(triGauche1.getSegment2(), bassinVersant);
+            }
+
+            if (triGauche1.equals(triGauche1.getSegment3().getTridroit())) {
+                if (triGauche1.getSegment3().getTrigauche() != null) {
+                    triGauche1.getSegment3().getTrigauche().calculProjete(triGauche1.getSegment3(), bassinVersant);
+                }
+            } else {
+
+                if (triGauche1.getSegment3().getTridroit() != null) {
+                    triGauche1.getSegment3().getTridroit().calculProjete(triGauche1.getSegment3(), bassinVersant);
+                }
+            }
+
+        } else {
+            bassinVersant.add(triGauche2);
+            if (triGauche2.equals(triGauche2.getSegment1().getTridroit())) {
+                triGauche2.getSegment1().getTrigauche().calculProjete(triGauche2.getSegment1(), bassinVersant);
+            } else {
+                triGauche2.getSegment1().getTridroit().calculProjete(triGauche2.getSegment1(), bassinVersant);
+            }
+
+            if (triGauche2.equals(triGauche2.getSegment2().getTridroit())) {
+                triGauche2.getSegment2().getTrigauche().calculProjete(triGauche2.getSegment2(), bassinVersant);
+            } else {
+                triGauche2.getSegment2().getTridroit().calculProjete(triGauche2.getSegment2(), bassinVersant);
+            }
+
+            if (triGauche2.equals(triGauche2.getSegment3().getTridroit())) {
+                triGauche2.getSegment3().getTrigauche().calculProjete(triGauche2.getSegment3(), bassinVersant);
+            } else {
+                triGauche2.getSegment3().getTridroit().calculProjete(triGauche2.getSegment3(), bassinVersant);
+            }
+        }
+
+    }
+}
 
 }

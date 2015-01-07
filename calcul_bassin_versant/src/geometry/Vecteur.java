@@ -54,7 +54,7 @@ public class Vecteur {
      */
     public Vecteur(Point3D point1, Point3D point2) {
         this.valx = point2.getPosx() - point1.getPosx();
-        this.valx = point2.getPosy() - point1.getPosy();
+        this.valy = point2.getPosy() - point1.getPosy();
     }
 
     /**

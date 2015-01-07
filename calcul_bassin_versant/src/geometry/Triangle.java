@@ -87,6 +87,14 @@ public class Triangle {
         this.segment3 = new Segment(point3, point1);
     }
 
+    @Override
+    /**
+     * surcharge de toString
+     */
+    public String toString() {
+        return ("Triangle:" + "\n\tpoint1\t" + point1.toString() + "\n\tpoint2\t" + point2.toString() + "\n\tpoint3\t" + point3.toString() + "\n\tsegment1\t" + "\n\t\tpoint1\t" + segment1.getPoint1().toString() + "\n\t\tpoint2\t" + segment1.getPoint2().toString() + "\n\tsegment2\t" + "\n\t\tpoint1\t" + segment2.getPoint1().toString() + "\n\t\tpoint2\t" + segment2.getPoint2().toString());
+    }
+
     /**
      * Renvoie l'égalité complete entre 2 objets de type Triangle ( les objets
      * le constituant sont identiques)
@@ -244,12 +252,16 @@ public class Triangle {
     }
 
     /**
-     * calcule la part d'un triangle faisant partie du bassin versant sachant le segment qui l'y relie, et propage ensuite selon les nouveaux segments qui y sont rattaché
+     * calcule la part d'un triangle faisant partie du bassin versant sachant le
+     * segment qui l'y relie, et propage ensuite selon les nouveaux segments qui
+     * y sont rattaché
+     *
      * @param segment
-     * @param bassinVersant 
+     * @param bassinVersant
      */
-    public void calculProjete(Segment segment,ArrayList<Triangle> bassinVersant) {
-        if ((!segment.gettraiteDroit() && (segment.getTridroit().equals(this)) || (!segment.getTraiteGauche() && (segment.getTrigauche().equals(this))))) {
+    public void calculProjete(Segment segment, ArrayList<Triangle> bassinVersant) {
+        if (((!segment.gettraiteDroit() && (segment.getTridroit().equals(this))) || ((!segment.getTraiteGauche() && 
+                (segment.getTrigauche().equals(this)))))) {
 
             if (segment.getTridroit().equals(this)) {
                 segment.setTraiteDroit(true);
@@ -305,24 +317,22 @@ public class Triangle {
 
             if (Vecteur.distAngle(angleBC, anglePente) <= Vecteur.distAngle(angleBC, angleCB)) {
                 //rien pour le moment, il n'y a pas de propagation donc pas d'appel récursif
-            } else {
 
+            } else {
                 //2eme cas : propagation totale du triangle
                 if (Vecteur.distAngle(angleAB, anglePente) < Vecteur.distAngle(angleAB, angleAC)) {
                     // projection sur le triangle entier
                     bassinVersant.add(this);
-                    
-                    if(segmentAB.getTridroit().equals(this)){
-                        segmentAB.getTrigauche().calculProjete(segmentAB,bassinVersant);
+
+                    if (segmentAB.getTridroit().equals(this)) {
+                        segmentAB.getTrigauche().calculProjete(segmentAB, bassinVersant);
+                    } else {
+                        segmentAB.getTridroit().calculProjete(segmentAB, bassinVersant);
                     }
-                    else{
-                        segmentAB.getTridroit().calculProjete(segmentAB,bassinVersant);
-                    }
-                    if(segmentAC.getTridroit().equals(this)){
-                        segmentAC.getTrigauche().calculProjete(segmentAC,bassinVersant);
-                    }
-                    else{
-                        segmentAC.getTridroit().calculProjete(segmentAC,bassinVersant);
+                    if (segmentAC.getTridroit().equals(this)) {
+                        segmentAC.getTrigauche().calculProjete(segmentAC, bassinVersant);
+                    } else {
+                        segmentAC.getTridroit().calculProjete(segmentAC, bassinVersant);
                     }
 
                 } else { // Les 2 cas précédents ont priorité sur les 2 qui suivent pour les cas qui sont en commun
@@ -334,7 +344,7 @@ public class Triangle {
 
                         //projection de B sur le segmentAC suivant la pente 
                         separation = Point3D.intersection(segmentAC, pointB, pente);
-                        segmentAC.decoupe(separation, this, pointC,bassinVersant);
+                        segmentAC.decoupe(separation, this, pointC, bassinVersant);
 
                     }
 
@@ -344,6 +354,7 @@ public class Triangle {
                         // projection de C sur le segmentAB suivant la pente
                         separation = Point3D.intersection(segmentAB, pointC, pente);
                         segmentAB.decoupe(separation, this, pointB, bassinVersant);
+                        
                     }
                 }
             }
