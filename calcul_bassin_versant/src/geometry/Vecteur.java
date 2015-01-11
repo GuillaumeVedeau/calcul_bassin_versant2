@@ -100,12 +100,13 @@ public class Vecteur {
     public double calculAngle() {
         double angle = 0;
         if (this.getValx() == 0 && this.getValy() == 0) {
+            // ce cas ne doit pas etre atteint normalement
         } else {
             if (asin(this.getValy() / (sqrt(this.getValx() * this.getValx() + this.getValy() * this.getValy()))) >= 0) {
                 angle =  acos(this.getValx() / (sqrt(this.getValx() * this.getValx() + this.getValy() * this.getValy())));
             } else {
                 angle =  acos(this.getValx() / (sqrt(this.getValx() * this.getValx() + this.getValy() * this.getValy())));
-                angle =  (angle + Math.PI);
+                angle =  (-angle + 2*Math.PI);
             }
         }
         return angle;
@@ -119,10 +120,11 @@ public class Vecteur {
     public static double distAngle(double angle1, double angle2){
         double distance;
         distance = angle2 - angle1;
-        if(angle2 - angle1 <0){
+        if(distance <0){
             distance =  (distance + 2*Math.PI);
+            
         }
-        
+       // System.out.println(distance);
         return distance;
         
     }

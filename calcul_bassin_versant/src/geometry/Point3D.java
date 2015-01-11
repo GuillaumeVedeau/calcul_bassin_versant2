@@ -28,7 +28,13 @@ public class Point3D {
         this.posy = posy;
         this.posz = posz;
     }
-
+    
+    public Point3D(){
+    this.posx = 0;
+    this.posy = 0;
+    this.posz = 0;
+    }
+    
     /**
      * Teste l'égalité entre 2 points
      * @param point
@@ -119,19 +125,19 @@ public class Point3D {
 
         a1 = vecteur.getValx();
         b1 = -vecteur.getValy();
-        c1 = (a1 * point.getPosx() - b1 * point.getPosy());
+        c1 = (a1 * point.getPosx() + b1 * point.getPosy());
 
         Vecteur vect = new Vecteur(segment);
+        
 
         a2 = vect.getValx();
         b2 = -vect.getValy();
-        c2 = (a2 * pointSeg1.getPosx() - b2 * pointSeg2.getPosy());
-
+        c2 = (a2 * pointSeg1.getPosx() + b2 * pointSeg1.getPosy());
         if ((a1 == a2) && (b1 == b2)) {
             //TODO gerer l'erreur dû au parrallélisme
         } else {
-            intersect.setPosx((c1 * b2 + c2 * b1) / (a1 * b2 + a2 * b1));
-            intersect.setPosy((c1 * a2 + c2 * a1) / (b1 * a2 + b2 * a1));
+            intersect.setPosx((c1 * b2 - c2 * b1) / (a1 * b2 - a2 * b1));
+            intersect.setPosy((c1 * a2 - c2 * a1) / (b1 * a2 - b2 * a1));
 
             if (pointSeg1.getPosx() == pointSeg2.getPosx()) {
                 intersect.setPosz(pointSeg1.getPosz() + (pointSeg2.getPosz() - pointSeg1.getPosz()) * ((pointSeg1.getPosy() - intersect.getPosy()) / (pointSeg1.getPosy() - pointSeg2.getPosy())));
@@ -141,9 +147,14 @@ public class Point3D {
             }
 
         }
-
         return intersect;
 
+    }
+    
+    public void ini(Point3D point){
+        
+        
+        
     }
 
 }

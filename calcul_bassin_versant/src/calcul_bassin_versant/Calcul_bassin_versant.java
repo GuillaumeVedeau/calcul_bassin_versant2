@@ -22,13 +22,13 @@ public class Calcul_bassin_versant {
         // TODO code application logic here
 
         Point3D pointA = new Point3D(0, 0, 10);
-        Point3D pointB = new Point3D(1, 0, 5);
-        Point3D pointC = new Point3D(0, 1, 5);
-        Point3D pointD = new Point3D(1, 1, 2);
-        Point3D pointE = new Point3D(2, 0, 2);
-        Point3D pointF = new Point3D(2, 1, 1);
-        Point3D pointG = new Point3D(0, 2, 2);
-        Point3D pointH = new Point3D(1, 2, 1);
+        Point3D pointB = new Point3D(1, 0, 8);
+        Point3D pointC = new Point3D(0, 1, 8);
+        Point3D pointD = new Point3D(1, 1, 5);
+        Point3D pointE = new Point3D(2, 0, 5);
+        Point3D pointF = new Point3D(2, 1, 2);
+        Point3D pointG = new Point3D(0, 2, 5);
+        Point3D pointH = new Point3D(1, 2, 2);
         Point3D pointI = new Point3D(2, 2, 0);
 
         Segment segAB = new Segment(pointA, pointB);
@@ -92,9 +92,14 @@ public class Calcul_bassin_versant {
         
         ArrayList<Triangle> resultat = new ArrayList<>();
         
-        triFIH.calculProjete(segFH, resultat);
+        triFIH.calculProjete(segHI, resultat);
         System.out.println(resultat.size());
-
+        System.out.println(resultat.get(0));
+        System.out.println(resultat.get(1));
+        System.out.println(resultat.get(2));
+        System.out.println(resultat.get(3));
+        System.out.println(resultat.get(4));
+        System.out.println(resultat.get(5));
     }
 
 }

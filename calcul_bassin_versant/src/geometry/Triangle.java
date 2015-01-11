@@ -21,6 +21,8 @@ public class Triangle {
     private Point3D point1;
     private Point3D point2;
     private Point3D point3;
+    // approximation par defaut faite sur les calcul d'angle (1°)
+    private static double approximationAngulaire = 0.16;
 
     /**
      * basic constructor based on Segment l'ordre des points est déterminé en
@@ -35,27 +37,24 @@ public class Triangle {
         this.segment2 = segment2;
         this.segment3 = segment3;
 
-        this.point1 = segment1.getPoint1();
-        this.point2 = segment1.getPoint2();
-        if (segment1.getPoint1() == segment2.getPoint1()) {
+        if (segment1.getPoint1() == segment2.getPoint1() || segment1.getPoint1() == segment2.getPoint2()) {
             this.point1 = segment1.getPoint2();
             this.point2 = segment1.getPoint1();
-            this.point3 = segment2.getPoint2();
-        }
-        if (segment1.getPoint2() == segment2.getPoint1()) {
+
+            if (segment1.getPoint1() == segment2.getPoint1()) {
+                this.point3 = segment2.getPoint2();
+            } else {
+                this.point3 = segment2.getPoint1();
+            }
+        } else {
             this.point1 = segment1.getPoint1();
             this.point2 = segment1.getPoint2();
-            this.point3 = segment2.getPoint2();
-        }
-        if (segment1.getPoint1() == segment2.getPoint2()) {
-            this.point1 = segment1.getPoint2();
-            this.point2 = segment1.getPoint1();
-            this.point3 = segment2.getPoint1();
-        }
-        if (segment1.getPoint2() == segment2.getPoint2()) {
-            this.point1 = segment1.getPoint1();
-            this.point2 = segment1.getPoint2();
-            this.point3 = segment2.getPoint1();
+
+            if (segment1.getPoint2() == segment2.getPoint1()) {
+                this.point3 = segment2.getPoint2();
+            } else {
+                this.point3 = segment2.getPoint1();
+            }
         }
     }
 
@@ -108,12 +107,15 @@ public class Triangle {
             return false;
         } else {
 
-            return (this.getPoint1().equals(triangle.getPoint1())
+            return ((this.getPoint1().equals(triangle.getPoint1())
                     && this.getPoint2().equals(triangle.getPoint2())
-                    && this.getPoint3().equals(triangle.getPoint3())
-                    && this.getSegment1().equals(triangle.getSegment1())
-                    && this.getSegment2().equals(triangle.getSegment2())
-                    && this.getSegment3().equals(triangle.getSegment3()));
+                    && this.getPoint3().equals(triangle.getPoint3()))
+                    || (this.getPoint1().equals(triangle.getPoint2())
+                    && this.getPoint2().equals(triangle.getPoint3())
+                    && this.getPoint3().equals(triangle.getPoint1()))
+                    || (this.getPoint1().equals(triangle.getPoint3())
+                    && this.getPoint2().equals(triangle.getPoint1())
+                    && this.getPoint3().equals(triangle.getPoint2())));
         }
     }
 
@@ -260,18 +262,19 @@ public class Triangle {
      * @param bassinVersant
      */
     public void calculProjete(Segment segment, ArrayList<Triangle> bassinVersant) {
-        if (((!segment.gettraiteDroit() && (segment.getTridroit().equals(this))) || ((!segment.getTraiteGauche() && 
-                (segment.getTrigauche().equals(this)))))) {
 
-            if (segment.getTridroit().equals(this)) {
+        if (((!segment.gettraiteDroit() && (this.equals(segment.getTridroit()))) || ((!segment.getTraiteGauche()
+                && (this.equals(segment.getTrigauche())))))) {
+
+            if (this.equals(segment.getTridroit())) {
                 segment.setTraiteDroit(true);
             } else {
                 segment.setTraiteGauche(true);
             }
 
-            Point3D pointA = new Point3D(0, 0, 0);
-            Point3D pointB = new Point3D(0, 0, 0);
-            Point3D pointC = new Point3D(0, 0, 0);
+            Point3D pointA = new Point3D();
+            Point3D pointB = new Point3D();
+            Point3D pointC = new Point3D();
             Segment segmentAB = new Segment();
             Segment segmentBC = new Segment();
             Segment segmentAC = new Segment();
@@ -280,22 +283,36 @@ public class Triangle {
 
             pente = this.calculPente();
 
-            if (this.getPoint1().equals(segment.getPoint1()) || this.getPoint1().equals(segment.getPoint2())) {
-                pointA = this.getPoint1();
-                pointB = this.getPoint2();
-                pointC = this.getPoint3();
-                segmentAB = this.getSegment1();
-                segmentBC = this.getSegment2();
-                segmentAC = this.getSegment3();
+            if (segment.getPoint1().equals(this.getPoint1())) {
 
-            } else {
-                if (this.getPoint2().equals(segment.getPoint1()) || this.getPoint2().equals(segment.getPoint2())) {
+                if (segment.getPoint2().equals(this.getPoint2())) {
+
+                    pointA = this.getPoint3();
+                    pointB = this.getPoint1();
+                    pointC = this.getPoint2();
+                    segmentAB = this.getSegment3();
+                    segmentBC = this.getSegment1();
+                    segmentAC = this.getSegment2();
+                } else {
                     pointA = this.getPoint2();
                     pointB = this.getPoint3();
                     pointC = this.getPoint1();
                     segmentAB = this.getSegment2();
                     segmentBC = this.getSegment3();
                     segmentAC = this.getSegment1();
+                }
+            }
+
+            if (segment.getPoint1().equals(this.getPoint2())) {
+
+                if (segment.getPoint2().equals(this.getPoint3())) {
+
+                    pointA = this.getPoint1();
+                    pointB = this.getPoint2();
+                    pointC = this.getPoint3();
+                    segmentAB = this.getSegment1();
+                    segmentBC = this.getSegment2();
+                    segmentAC = this.getSegment3();
                 } else {
                     pointA = this.getPoint3();
                     pointB = this.getPoint1();
@@ -306,7 +323,26 @@ public class Triangle {
                 }
             }
 
-            //1er cas: pas de propagation:
+            if (segment.getPoint1().equals(this.getPoint3())) {
+
+                if (segment.getPoint2().equals(this.getPoint1())) {
+
+                    pointA = this.getPoint2();
+                    pointB = this.getPoint3();
+                    pointC = this.getPoint1();
+                    segmentAB = this.getSegment2();
+                    segmentBC = this.getSegment3();
+                    segmentAC = this.getSegment1();
+                } else {
+                    pointA = this.getPoint1();
+                    pointB = this.getPoint2();
+                    pointC = this.getPoint3();
+                    segmentAB = this.getSegment1();
+                    segmentBC = this.getSegment2();
+                    segmentAC = this.getSegment3();
+                }
+            }
+
             double angleBC = (new Vecteur(pointB, pointC).calculAngle());
             double angleCB = (new Vecteur(pointC, pointB).calculAngle());
 
@@ -315,24 +351,38 @@ public class Triangle {
 
             double anglePente = this.calculPente().calculAngle();
 
-            if (Vecteur.distAngle(angleBC, anglePente) <= Vecteur.distAngle(angleBC, angleCB)) {
+            if (((Vecteur.distAngle(angleBC, anglePente) - Vecteur.distAngle(angleBC, angleCB)) < approximationAngulaire) || (Math.abs(angleBC - anglePente) < approximationAngulaire)) {
+                //1er cas: pas de propagation:
                 //rien pour le moment, il n'y a pas de propagation donc pas d'appel récursif
-
+                
             } else {
                 //2eme cas : propagation totale du triangle
-                if (Vecteur.distAngle(angleAB, anglePente) < Vecteur.distAngle(angleAB, angleAC)) {
+                if (((Vecteur.distAngle(angleAB, anglePente) - Vecteur.distAngle(angleAB, angleAC)) < approximationAngulaire) || (Math.abs(angleAB - anglePente) < approximationAngulaire)) {
+
                     // projection sur le triangle entier
                     bassinVersant.add(this);
 
-                    if (segmentAB.getTridroit().equals(this)) {
-                        segmentAB.getTrigauche().calculProjete(segmentAB, bassinVersant);
-                    } else {
-                        segmentAB.getTridroit().calculProjete(segmentAB, bassinVersant);
+                    if (segmentAB.getTridroit() != null) {
+                        if (segmentAB.getTridroit().equals(this)) {
+                            if (segmentAB.getTrigauche() != null) {
+                                segmentAB.getTrigauche().calculProjete(segmentAB, bassinVersant);
+
+                            }
+                        } else {
+                            segmentAB.getTridroit().calculProjete(segmentAB, bassinVersant);
+                        }
                     }
-                    if (segmentAC.getTridroit().equals(this)) {
-                        segmentAC.getTrigauche().calculProjete(segmentAC, bassinVersant);
-                    } else {
-                        segmentAC.getTridroit().calculProjete(segmentAC, bassinVersant);
+
+                    if (segmentAC.getTridroit() != null) {
+                        if (segmentAC.getTridroit().equals(this)) {
+                            if (segmentAC.getTrigauche() != null) {
+
+                                segmentAC.getTrigauche().calculProjete(segmentAC, bassinVersant);
+
+                            }
+                        } else {
+                            segmentAC.getTridroit().calculProjete(segmentAC, bassinVersant);
+                        }
                     }
 
                 } else { // Les 2 cas précédents ont priorité sur les 2 qui suivent pour les cas qui sont en commun
@@ -354,7 +404,7 @@ public class Triangle {
                         // projection de C sur le segmentAB suivant la pente
                         separation = Point3D.intersection(segmentAB, pointC, pente);
                         segmentAB.decoupe(separation, this, pointB, bassinVersant);
-                        
+
                     }
                 }
             }
