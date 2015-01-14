@@ -5,13 +5,15 @@
  */
 package geometry;
 
+import java.util.ArrayList;
+
 /**
  * gere les objet de type Poin3D
  *
  * @author Utilisateur
  */
 public class Point3D {
-
+    
     private double posx;
     private double posy;
     private double posz;
@@ -29,32 +31,32 @@ public class Point3D {
         this.posz = posz;
     }
     
-    public Point3D(){
-    this.posx = 0;
-    this.posy = 0;
-    this.posz = 0;
+    public Point3D() {
+        this.posx = 0;
+        this.posy = 0;
+        this.posz = 0;
     }
-    
+
     /**
      * Teste l'égalité entre 2 points
+     *
      * @param point
-     * @return 
+     * @return
      */
     public boolean equals(Point3D point) {
         return (this.getPosx() == point.getPosx()
                 && this.getPosy() == point.getPosy()
                 && this.getPosz() == point.getPosz());
     }
-
+    
     @Override
     /**
      * surcharge de toString
      */
     public String toString() {
-        return ("\tx:"+posx+"\ty:"+posy+"\tz:"+posz); //To change body of generated methods, choose Tools | Templates.
+        return ("\tx:" + posx + "\ty:" + posy + "\tz:" + posz); //To change body of generated methods, choose Tools | Templates.
     }
 
-    
     /**
      * Get the value of posz
      *
@@ -110,11 +112,13 @@ public class Point3D {
     }
 
     /**
-     * renvoie le point de projection d'un point sur un segment suivant un vecteur
+     * renvoie le point de projection d'un point sur un segment suivant un
+     * vecteur
+     *
      * @param segment
      * @param point
      * @param vecteur
-     * @return 
+     * @return
      */
     public static Point3D intersection(Segment segment, Point3D point, Vecteur vecteur) {
         double a1, b1, c1;
@@ -122,14 +126,13 @@ public class Point3D {
         Point3D intersect = new Point3D(0, 0, 0);
         Point3D pointSeg1 = segment.getPoint1(); // pour simplifier l'écriture de plusieurs expressions
         Point3D pointSeg2 = segment.getPoint2();
-
+        
         a1 = vecteur.getValx();
         b1 = -vecteur.getValy();
         c1 = (a1 * point.getPosx() + b1 * point.getPosy());
-
+        
         Vecteur vect = new Vecteur(segment);
         
-
         a2 = vect.getValx();
         b2 = -vect.getValy();
         c2 = (a2 * pointSeg1.getPosx() + b2 * pointSeg1.getPosy());
@@ -138,23 +141,112 @@ public class Point3D {
         } else {
             intersect.setPosx((c1 * b2 - c2 * b1) / (a1 * b2 - a2 * b1));
             intersect.setPosy((c1 * a2 - c2 * a1) / (b1 * a2 - b2 * a1));
-
+            
             if (pointSeg1.getPosx() == pointSeg2.getPosx()) {
                 intersect.setPosz(pointSeg1.getPosz() + (pointSeg2.getPosz() - pointSeg1.getPosz()) * ((pointSeg1.getPosy() - intersect.getPosy()) / (pointSeg1.getPosy() - pointSeg2.getPosy())));
-
+                
             } else {
                 intersect.setPosz(pointSeg1.getPosz() + (pointSeg2.getPosz() - pointSeg1.getPosz()) * ((pointSeg1.getPosx() - intersect.getPosx()) / (pointSeg1.getPosx() - pointSeg2.getPosx())));
             }
-
+            
         }
         return intersect;
-
+        
     }
     
-    public void ini(Point3D point){
+    public ArrayList<Triangle> calculBassin(ArrayList<Triangle> triangles) {
         
+        ArrayList<Triangle> bassinVersant = new ArrayList<>();
         
-        
+        for (Triangle triangle : triangles) {
+            if (triangle.getPoint1().equals(this)) {
+                if (triangle.getSegment1().getTridroit() != null && triangle.getSegment1().getTrigauche() != null) {
+                    if ((triangle.getPoint2().getPosz() > this.getPosz())
+                            && ((Vecteur.distAngle(triangle.getSegment1().getTridroit().calculPente().calculAngle(), (new Vecteur(triangle.getPoint2(), this)).calculAngle()) < Math.PI / 2)
+                            || (Math.abs(Vecteur.distAngle(triangle.getSegment1().getTridroit().calculPente().calculAngle(), (new Vecteur(triangle.getPoint2(), this)).calculAngle())) < Triangle.getApproximationAngulaire()))
+                            && ((Vecteur.distAngle((new Vecteur(triangle.getPoint2(), this)).calculAngle(), triangle.getSegment1().getTrigauche().calculPente().calculAngle()) < Math.PI / 2)
+                            || (Math.abs(Vecteur.distAngle((new Vecteur(triangle.getPoint2(), this)).calculAngle(), triangle.getSegment1().getTridroit().calculPente().calculAngle())) < Triangle.getApproximationAngulaire()))) {
+                        
+                        triangle.getSegment1().getTridroit().calculProjete(triangle.getSegment1(), bassinVersant);
+                        triangle.getSegment1().getTrigauche().calculProjete(triangle.getSegment1(), bassinVersant);
+                    }
+                    
+                }
+                
+                if (triangle.getSegment3().getTridroit() != null && triangle.getSegment3().getTrigauche() != null) {
+                    if ((triangle.getPoint3().getPosz() >= this.getPosz())
+                            && ((Vecteur.distAngle(triangle.getSegment3().getTridroit().calculPente().calculAngle(), (new Vecteur(this,triangle.getPoint3())).calculAngle()) < Math.PI / 2)
+                            || (Math.abs(Vecteur.distAngle(triangle.getSegment3().getTridroit().calculPente().calculAngle(), (new Vecteur(this, triangle.getPoint3())).calculAngle())) < Triangle.getApproximationAngulaire()))
+                            && ((Vecteur.distAngle((new Vecteur(this, triangle.getPoint3())).calculAngle(), triangle.getSegment3().getTrigauche().calculPente().calculAngle()) < Math.PI / 2)
+                            || (Math.abs(Vecteur.distAngle((new Vecteur(this, triangle.getPoint3())).calculAngle(), triangle.getSegment3().getTridroit().calculPente().calculAngle())) < Triangle.getApproximationAngulaire()))) {
+                        
+                        triangle.getSegment3().getTridroit().calculProjete(triangle.getSegment3(), bassinVersant);
+                        triangle.getSegment3().getTrigauche().calculProjete(triangle.getSegment3(), bassinVersant);
+                    }
+                    
+                }
+            }
+            
+            if (triangle.getPoint2().equals(this)) {
+                if (triangle.getSegment2().getTridroit() != null && triangle.getSegment2().getTrigauche() != null) {
+                    if ((triangle.getPoint3().getPosz() > this.getPosz())
+                            && ((Vecteur.distAngle(triangle.getSegment2().getTridroit().calculPente().calculAngle(), (new Vecteur(triangle.getPoint3(), this)).calculAngle()) < Math.PI / 2)
+                            || (Math.abs(Vecteur.distAngle(triangle.getSegment2().getTridroit().calculPente().calculAngle(), (new Vecteur(triangle.getPoint3(), this)).calculAngle())) < Triangle.getApproximationAngulaire()))
+                            && ((Vecteur.distAngle((new Vecteur(triangle.getPoint3(), this)).calculAngle(), triangle.getSegment2().getTrigauche().calculPente().calculAngle()) < Math.PI / 2)
+                            || (Math.abs(Vecteur.distAngle((new Vecteur(triangle.getPoint3(), this)).calculAngle(), triangle.getSegment2().getTridroit().calculPente().calculAngle())) < Triangle.getApproximationAngulaire()))) {
+                        
+                        triangle.getSegment2().getTridroit().calculProjete(triangle.getSegment2(), bassinVersant);
+                        triangle.getSegment2().getTrigauche().calculProjete(triangle.getSegment2(), bassinVersant);
+                    }
+                    
+                }
+                
+                if (triangle.getSegment1().getTridroit() != null && triangle.getSegment1().getTrigauche() != null) {
+                    if ((triangle.getPoint1().getPosz() > this.getPosz())
+                            && ((Vecteur.distAngle(triangle.getSegment1().getTridroit().calculPente().calculAngle(), (new Vecteur(this,triangle.getPoint1())).calculAngle()) < Math.PI / 2)
+                            || (Math.abs(Vecteur.distAngle(triangle.getSegment1().getTridroit().calculPente().calculAngle(), (new Vecteur(this, triangle.getPoint1())).calculAngle())) < Triangle.getApproximationAngulaire()))
+                            && ((Vecteur.distAngle((new Vecteur(this, triangle.getPoint1())).calculAngle(), triangle.getSegment1().getTrigauche().calculPente().calculAngle()) < Math.PI / 2)
+                            || (Math.abs(Vecteur.distAngle((new Vecteur(this, triangle.getPoint1())).calculAngle(), triangle.getSegment1().getTridroit().calculPente().calculAngle())) < Triangle.getApproximationAngulaire()))) {
+                        
+                        triangle.getSegment1().getTridroit().calculProjete(triangle.getSegment1(), bassinVersant);
+                        triangle.getSegment1().getTrigauche().calculProjete(triangle.getSegment1(), bassinVersant);
+                    }
+                    
+                }
+            }
+            
+            
+            if (triangle.getPoint3().equals(this)) {
+                if (triangle.getSegment3().getTridroit() != null && triangle.getSegment3().getTrigauche() != null) {
+                    if ((triangle.getPoint1().getPosz() > this.getPosz())
+                            && ((Vecteur.distAngle(triangle.getSegment3().getTridroit().calculPente().calculAngle(), (new Vecteur(triangle.getPoint1(), this)).calculAngle()) < Math.PI / 2)
+                            || (Math.abs(Vecteur.distAngle(triangle.getSegment3().getTridroit().calculPente().calculAngle(), (new Vecteur(triangle.getPoint1(), this)).calculAngle())) < Triangle.getApproximationAngulaire()))
+                            && ((Vecteur.distAngle((new Vecteur(triangle.getPoint1(), this)).calculAngle(), triangle.getSegment3().getTrigauche().calculPente().calculAngle()) < Math.PI / 2)
+                            || (Math.abs(Vecteur.distAngle((new Vecteur(triangle.getPoint1(), this)).calculAngle(), triangle.getSegment3().getTridroit().calculPente().calculAngle())) < Triangle.getApproximationAngulaire()))) {
+                        
+                        triangle.getSegment3().getTridroit().calculProjete(triangle.getSegment3(), bassinVersant);
+                        triangle.getSegment3().getTrigauche().calculProjete(triangle.getSegment3(), bassinVersant);
+                    }
+                    
+                }
+                
+                if (triangle.getSegment2().getTridroit() != null && triangle.getSegment2().getTrigauche() != null) {
+                    if ((triangle.getPoint2().getPosz() > this.getPosz())
+                            && ((Vecteur.distAngle(triangle.getSegment2().getTridroit().calculPente().calculAngle(), (new Vecteur(this,triangle.getPoint2())).calculAngle()) < Math.PI / 2)
+                            || (Math.abs(Vecteur.distAngle(triangle.getSegment2().getTridroit().calculPente().calculAngle(), (new Vecteur(this, triangle.getPoint2())).calculAngle())) < Triangle.getApproximationAngulaire()))
+                            && ((Vecteur.distAngle((new Vecteur(this, triangle.getPoint2())).calculAngle(), triangle.getSegment2().getTrigauche().calculPente().calculAngle()) < Math.PI / 2)
+                            || (Math.abs(Vecteur.distAngle((new Vecteur(this, triangle.getPoint2())).calculAngle(), triangle.getSegment2().getTridroit().calculPente().calculAngle())) < Triangle.getApproximationAngulaire()))) {
+                        
+                        triangle.getSegment2().getTridroit().calculProjete(triangle.getSegment2(), bassinVersant);
+                        triangle.getSegment2().getTrigauche().calculProjete(triangle.getSegment2(), bassinVersant);
+                    }
+                    
+                }
+            }
+            
+            
+        }
+        return bassinVersant;
     }
-
+    
 }

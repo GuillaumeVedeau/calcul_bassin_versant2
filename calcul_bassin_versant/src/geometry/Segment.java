@@ -68,7 +68,7 @@ public class Segment {
 
     /**
      * cherche et complete trigauche et tridroit du segment selon une liste de
-     * triangle donné
+     * triangle donné, et met à jour les triangle concernés
      *
      * @param triangles liste de triangles dans lequel il faut chercher ceux
      * juxtaposés au segment manipulé
@@ -76,15 +76,30 @@ public class Segment {
     public void chercheTriangle(ArrayList<Triangle> triangles) {
 
         for (Triangle triangle : triangles) {
-            if ((triangle.getPoint1().equals(point1) && triangle.getPoint2().equals(point2))
-                    || (triangle.getPoint2().equals(point1) && triangle.getPoint3().equals(point2))
-                    || (triangle.getPoint3().equals(point1) && triangle.getPoint1().equals(point2))) {
+            if (triangle.getPoint1().equals(point1) && triangle.getPoint2().equals(point2)){
                 this.setTridroit(triangle);
+                triangle.setSegment1(this);
             }
-            if ((triangle.getPoint2().equals(point1) && triangle.getPoint1().equals(point2))
-                    || (triangle.getPoint3().equals(point1) && triangle.getPoint2().equals(point2))
-                    || (triangle.getPoint1().equals(point1) && triangle.getPoint3().equals(point2))) {
+            if (triangle.getPoint2().equals(point1) && triangle.getPoint3().equals(point2)){
+                this.setTridroit(triangle);
+                triangle.setSegment2(this);
+            }
+            if (triangle.getPoint3().equals(point1) && triangle.getPoint1().equals(point2)){
+                this.setTridroit(triangle);
+                triangle.setSegment3(this);
+            }
+
+            if (triangle.getPoint2().equals(point1) && triangle.getPoint1().equals(point2)){
                 this.setTrigauche(triangle);
+                triangle.setSegment1(this);
+            }
+            if (triangle.getPoint3().equals(point1) && triangle.getPoint2().equals(point2)){
+                this.setTrigauche(triangle);
+                triangle.setSegment2(this);
+            }
+            if (triangle.getPoint1().equals(point1) && triangle.getPoint3().equals(point2)){
+                this.setTrigauche(triangle);
+                triangle.setSegment3(this);
             }
         }
 

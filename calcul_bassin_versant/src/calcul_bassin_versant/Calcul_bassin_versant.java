@@ -5,6 +5,7 @@
  */
 package calcul_bassin_versant;
 
+import Utilitaires.LectureWrl;
 import geometry.*;
 import java.util.ArrayList;
 
@@ -100,6 +101,14 @@ public class Calcul_bassin_versant {
         System.out.println(resultat.get(3));
         System.out.println(resultat.get(4));
         System.out.println(resultat.get(5));
+        
+       /* LectureWrl test = new LectureWrl("C:/Users/Utilisateur/Documents/NetBeansProjects/calcul_bassin_versant/calcul_bassin_versant/Chezine.wrl");
+        System.out.println(test.getListeTriangle().get(0));
+        Triangle.construction(test.getListeTriangle(),new ArrayList<>());
+        System.out.println(test.getListeTriangle().get(0).getSegment1().getPoint1());
+        System.out.println(test.getListePoint().get(22).calculBassin(triangles).size());*/
+        
+        System.out.println(pointF.calculBassin(triangles).size());
     }
 
 }

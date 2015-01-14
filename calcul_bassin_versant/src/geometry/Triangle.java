@@ -85,13 +85,40 @@ public class Triangle {
         this.segment2 = new Segment(point2, point3);
         this.segment3 = new Segment(point3, point1);
     }
+    
+    /**
+     * construit les objets nécessaires au calcul du bassin versant
+     * @param triangles
+     * @param segments permet de récuperer la liste des segments créés si besoin
+     */
+    public static void construction(ArrayList<Triangle> triangles, ArrayList<Segment> segments){
+        
+        for(Triangle triangle : triangles){
+            if(triangle.getSegment1()==null){
+                Segment seg1 = new Segment(triangle.getPoint1(), triangle.getPoint2());
+                segments.add(seg1);
+                seg1.chercheTriangle(triangles);
+            }
+            if(triangle.getSegment2()==null){
+                Segment seg2 = new Segment(triangle.getPoint2(), triangle.getPoint3());
+                segments.add(seg2);
+                seg2.chercheTriangle(triangles);
+            }
+            if(triangle.getSegment3()==null){
+                Segment seg3 = new Segment(triangle.getPoint3(), triangle.getPoint1());
+                segments.add(seg3);
+                seg3.chercheTriangle(triangles);
+            }
+        }
+        
+    }
 
     @Override
     /**
      * surcharge de toString
      */
     public String toString() {
-        return ("Triangle:" + "\n\tpoint1\t" + point1.toString() + "\n\tpoint2\t" + point2.toString() + "\n\tpoint3\t" + point3.toString() + "\n\tsegment1\t" + "\n\t\tpoint1\t" + segment1.getPoint1().toString() + "\n\t\tpoint2\t" + segment1.getPoint2().toString() + "\n\tsegment2\t" + "\n\t\tpoint1\t" + segment2.getPoint1().toString() + "\n\t\tpoint2\t" + segment2.getPoint2().toString());
+        return ("Triangle:" + "\n\tpoint1\t" + point1.toString() + "\n\tpoint2\t" + point2.toString() + "\n\tpoint3\t" + point3.toString());
     }
 
     /**
@@ -226,6 +253,22 @@ public class Triangle {
     public void setPoint3(Point3D point3) {
         this.point3 = point3;
     }
+    
+    /**
+     * Get the value of approximation angulaire
+     * @return the value of approximation angulaire
+     */
+    public static double getApproximationAngulaire(){
+        return approximationAngulaire;
+    }
+    
+    /**
+     * Set the value of approximation angulaire
+     * @param appro new value of approximation angulaire
+     */
+    public static void setApproximationAngulaire(double appro){
+        approximationAngulaire = appro;
+    }
 
     /**
      * calcule le vecteur pente en 2D indiquant la direction de plus forte
@@ -349,62 +392,93 @@ public class Triangle {
             double angleAB = (new Vecteur(pointA, pointB).calculAngle());
             double angleAC = (new Vecteur(pointA, pointC).calculAngle());
 
-            double anglePente = this.calculPente().calculAngle();
+            Vecteur pente1 = this.calculPente();
 
-            if (((Vecteur.distAngle(angleBC, anglePente) - Vecteur.distAngle(angleBC, angleCB)) < approximationAngulaire) || (Math.abs(angleBC - anglePente) < approximationAngulaire)) {
-                //1er cas: pas de propagation:
-                //rien pour le moment, il n'y a pas de propagation donc pas d'appel récursif
-                
+            if ((pente1.getValx() == 0) && (pente1.getValy() == 0)) {
+                // projection sur le triangle entier dans le cas d'une surface horizontale
+                bassinVersant.add(this);
+
+                if (segmentAB.getTridroit() != null) {
+                    if (segmentAB.getTridroit().equals(this)) {
+                        if (segmentAB.getTrigauche() != null) {
+                            segmentAB.getTrigauche().calculProjete(segmentAB, bassinVersant);
+
+                        }
+                    } else {
+                        segmentAB.getTridroit().calculProjete(segmentAB, bassinVersant);
+                    }
+                }
+
+                if (segmentAC.getTridroit() != null) {
+                    if (segmentAC.getTridroit().equals(this)) {
+                        if (segmentAC.getTrigauche() != null) {
+
+                            segmentAC.getTrigauche().calculProjete(segmentAC, bassinVersant);
+
+                        }
+                    } else {
+                        segmentAC.getTridroit().calculProjete(segmentAC, bassinVersant);
+                    }
+                }
             } else {
-                //2eme cas : propagation totale du triangle
-                if (((Vecteur.distAngle(angleAB, anglePente) - Vecteur.distAngle(angleAB, angleAC)) < approximationAngulaire) || (Math.abs(angleAB - anglePente) < approximationAngulaire)) {
 
-                    // projection sur le triangle entier
-                    bassinVersant.add(this);
+                double anglePente = pente1.calculAngle();
 
-                    if (segmentAB.getTridroit() != null) {
-                        if (segmentAB.getTridroit().equals(this)) {
-                            if (segmentAB.getTrigauche() != null) {
-                                segmentAB.getTrigauche().calculProjete(segmentAB, bassinVersant);
+                if (((Vecteur.distAngle(angleBC, anglePente) - Vecteur.distAngle(angleBC, angleCB)) < approximationAngulaire) || (Math.abs(angleBC - anglePente) < approximationAngulaire)) {
+                //1er cas: pas de propagation:
+                    //rien pour le moment, il n'y a pas de propagation donc pas d'appel récursif
 
+                } else {
+                    //2eme cas : propagation totale du triangle
+                    if (((Vecteur.distAngle(angleAB, anglePente) - Vecteur.distAngle(angleAB, angleAC)) < approximationAngulaire) || (Math.abs(angleAB - anglePente) < approximationAngulaire)) {
+
+                        // projection sur le triangle entier
+                        bassinVersant.add(this);
+
+                        if (segmentAB.getTridroit() != null) {
+                            if (segmentAB.getTridroit().equals(this)) {
+                                if (segmentAB.getTrigauche() != null) {
+                                    segmentAB.getTrigauche().calculProjete(segmentAB, bassinVersant);
+
+                                }
+                            } else {
+                                segmentAB.getTridroit().calculProjete(segmentAB, bassinVersant);
                             }
-                        } else {
-                            segmentAB.getTridroit().calculProjete(segmentAB, bassinVersant);
                         }
-                    }
 
-                    if (segmentAC.getTridroit() != null) {
-                        if (segmentAC.getTridroit().equals(this)) {
-                            if (segmentAC.getTrigauche() != null) {
+                        if (segmentAC.getTridroit() != null) {
+                            if (segmentAC.getTridroit().equals(this)) {
+                                if (segmentAC.getTrigauche() != null) {
 
-                                segmentAC.getTrigauche().calculProjete(segmentAC, bassinVersant);
+                                    segmentAC.getTrigauche().calculProjete(segmentAC, bassinVersant);
 
+                                }
+                            } else {
+                                segmentAC.getTridroit().calculProjete(segmentAC, bassinVersant);
                             }
-                        } else {
-                            segmentAC.getTridroit().calculProjete(segmentAC, bassinVersant);
                         }
-                    }
 
-                } else { // Les 2 cas précédents ont priorité sur les 2 qui suivent pour les cas qui sont en commun
+                    } else { // Les 2 cas précédents ont priorité sur les 2 qui suivent pour les cas qui sont en commun
 
-                    Point3D separation = new Point3D(0, 0, 0);
+                        Point3D separation = new Point3D(0, 0, 0);
 
-                    //3eme cas : propagation partielle sur le triangle, comprenant une partie du segment AC
-                    if (Vecteur.distAngle(angleCB, anglePente) <= Vecteur.distAngle(angleCB, angleAB)) {
+                        //3eme cas : propagation partielle sur le triangle, comprenant une partie du segment AC
+                        if (Vecteur.distAngle(angleCB, anglePente) <= Vecteur.distAngle(angleCB, angleAB)) {
 
-                        //projection de B sur le segmentAC suivant la pente 
-                        separation = Point3D.intersection(segmentAC, pointB, pente);
-                        segmentAC.decoupe(separation, this, pointC, bassinVersant);
+                            //projection de B sur le segmentAC suivant la pente 
+                            separation = Point3D.intersection(segmentAC, pointB, pente);
+                            segmentAC.decoupe(separation, this, pointC, bassinVersant);
 
-                    }
+                        }
 
-                    //4ème cas : propagation partielle sur le triangle, comprenant une partie du segment AB
-                    if (Vecteur.distAngle(angleAC, anglePente) <= Vecteur.distAngle(angleAC, angleBC)) {
+                        //4ème cas : propagation partielle sur le triangle, comprenant une partie du segment AB
+                        if (Vecteur.distAngle(angleAC, anglePente) <= Vecteur.distAngle(angleAC, angleBC)) {
 
-                        // projection de C sur le segmentAB suivant la pente
-                        separation = Point3D.intersection(segmentAB, pointC, pente);
-                        segmentAB.decoupe(separation, this, pointB, bassinVersant);
+                            // projection de C sur le segmentAB suivant la pente
+                            separation = Point3D.intersection(segmentAB, pointC, pente);
+                            segmentAB.decoupe(separation, this, pointB, bassinVersant);
 
+                        }
                     }
                 }
             }
