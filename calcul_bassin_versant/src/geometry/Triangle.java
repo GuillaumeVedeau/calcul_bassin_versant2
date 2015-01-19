@@ -22,7 +22,7 @@ public class Triangle {
     private Point3D point2;
     private Point3D point3;
     // approximation par defaut faite sur les calcul d'angle (1°)
-    private static double approximationAngulaire = 0.16;
+    private static double approximationAngulaire = 0.32;
 
     /**
      * basic constructor based on Segment l'ordre des points est déterminé en
@@ -305,9 +305,8 @@ public class Triangle {
      * @param bassinVersant
      */
     public void calculProjete(Segment segment, ArrayList<Triangle> bassinVersant) {
-
-        if (((!segment.gettraiteDroit() && (this.equals(segment.getTridroit()))) || ((!segment.getTraiteGauche()
-                && (this.equals(segment.getTrigauche())))))) {
+        if ((!segment.gettraiteDroit() && this.equals(segment.getTridroit())) || (!segment.getTraiteGauche()
+                && this.equals(segment.getTrigauche()))) {
 
             if (this.equals(segment.getTridroit())) {
                 segment.setTraiteDroit(true);
